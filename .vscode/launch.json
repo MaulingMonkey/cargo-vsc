@@ -5,25 +5,33 @@
         // cargo-vsc
         {
             "name":                     "cargo-vsc • debug",
-            "type":                     "cppvsdbg",
+            "type":                     "cppdbg",
             "request":                  "launch",
             "internalConsoleOptions":   "openOnSessionStart",
-            "enableDebugHeap":          true,
             "preLaunchTask":            "cargo build --package cargo-vsc --bin cargo-vsc",
-            "program":                  "${workspaceFolder}/target/debug/cargo-vsc.exe",
+            "program":                  "${workspaceFolder}/target/debug/cargo-vsc",
             "cwd":                      "${workspaceFolder}",
             "environment":              [ { "name": "RUST_BACKTRACE", "value": "1" } ],
+            "windows": {
+                "type":                     "cppvsdbg",
+                "program":                  "${workspaceFolder}/target/debug/cargo-vsc.exe",
+                "enableDebugHeap":          true,
+            }
         },
         {
             "name":                     "cargo-vsc • release",
-            "type":                     "cppvsdbg",
+            "type":                     "cppdbg",
             "request":                  "launch",
             "internalConsoleOptions":   "openOnSessionStart",
-            "enableDebugHeap":          false,
             "preLaunchTask":            "cargo build --package cargo-vsc --bin cargo-vsc --release",
-            "program":                  "${workspaceFolder}/target/release/cargo-vsc.exe",
+            "program":                  "${workspaceFolder}/target/release/cargo-vsc",
             "cwd":                      "${workspaceFolder}",
             "environment":              [ { "name": "RUST_BACKTRACE", "value": "1" } ],
+            "windows": {
+                "type":                     "cppvsdbg",
+                "program":                  "${workspaceFolder}/target/release/cargo-vsc.exe",
+                "enableDebugHeap":          false,
+            }
         },
     ]
 }

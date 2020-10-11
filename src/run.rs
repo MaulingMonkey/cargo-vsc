@@ -117,7 +117,6 @@ fn create_vscode_launch_json(Context { meta, vscode, .. }: &Context) -> io::Resu
                     _other      => continue // not currently launchable
                 };
                 let cargo_build_release = format!("{} --release", cargo_build_debug);
-                let exe_ext = if cfg!(windows) { ".exe" } else { "" };
 
                 for (config, build) in vec![("debug", cargo_build_debug), ("release", cargo_build_release)].into_iter() {
                     let name = if package.name == target.name && kind == "bin" {
@@ -128,14 +127,18 @@ fn create_vscode_launch_json(Context { meta, vscode, .. }: &Context) -> io::Resu
 
                     writeln!(o, "        {{")?;
                     writeln!(o, "            \"name\":                     {},", serde_json::to_string(&name).unwrap())?;
-                    writeln!(o, "            \"type\":                     \"cppvsdbg\",")?;
+                    writeln!(o, "            \"type\":                     \"cppdbg\",")?;
                     writeln!(o, "            \"request\":                  \"launch\",")?;
                     writeln!(o, "            \"internalConsoleOptions\":   \"openOnSessionStart\",")?;
-                    writeln!(o, "            \"enableDebugHeap\":          {},", config == "debug")?;
                     writeln!(o, "            \"preLaunchTask\":            {},", serde_json::to_string(&build).unwrap())?;
-                    writeln!(o, "            \"program\":                  {},", serde_json::to_string(&format!("${{workspaceFolder}}/target/{}/{}{}{}", config, subdir, target.name, exe_ext)).unwrap())?;
+                    writeln!(o, "            \"program\":                  {},", serde_json::to_string(&format!("${{workspaceFolder}}/target/{}/{}{}", config, subdir, target.name)).unwrap())?;
                     writeln!(o, "            \"cwd\":                      \"${{workspaceFolder}}\",")?;
                     writeln!(o, "            \"environment\":              [ {{ \"name\": \"RUST_BACKTRACE\", \"value\": \"1\" }} ],")?;
+                    writeln!(o, "            \"windows\": {{")?;
+                    writeln!(o, "                \"type\":                     \"cppvsdbg\",")?; // despite vscode intellisense errors to the contrary, this totally works & is necessary
+                    writeln!(o, "                \"program\":                  {},", serde_json::to_string(&format!("${{workspaceFolder}}/target/{}/{}{}.exe", config, subdir, target.name)).unwrap())?;
+                    writeln!(o, "                \"enableDebugHeap\":          {},", config == "debug")?;
+                    writeln!(o, "            }}")?;
                     writeln!(o, "        }},")?;
                 }
             }
