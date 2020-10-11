@@ -9,6 +9,31 @@
 
 
 
+<h2 name="quickstart">Quickstart</h2>
+
+```sh
+cd my-rust-project
+cargo install cargo-vsc
+cargo vsc
+code .
+```
+
+`Ctrl` + `Shift` + `B` to check, test, and build<br>
+`Ctrl` + `Shift` + `D` "Run" to select different executables<br>
+`F5` to debug the selected launch configuration (`cargo-vsc • debug` by default for this project)<br>
+
+
+
+<h2 name="generated">What's generated?</h2>
+
+`.vscode/.gitignore` since many/most projects don't want .vscode boilerplate checked in IME (although I always provide mine)<br>
+`.vscode/extensions.json` so VS Code will auto-recommend appropriate extensions<br>
+`.vscode/settings.json` to ignore `target` mucking up search results<br>
+`.vscode/tasks.json` to check/build/test by default build action, open various documentation links as vanilla tasks, and to support launch.json<br>
+`.vscode/launch.json` to provide debugging configurations for every rust bin and example in the workspace<br>
+
+
+
 <h2 name="license">License</h2>
 
 Licensed under either of
