@@ -78,19 +78,19 @@
             "presentation":     { "clear": true, "panel": "shared", "reveal": "always" },
         },
         {
-            "label":            "cargo doc --no-deps --package cargo-vsc --bin cargo-vsc",
-            "command":          "cargo +nightly doc --no-deps --package cargo-vsc --bin cargo-vsc || cargo doc --no-deps --package cargo-vsc --bin cargo-vsc",
-            "type":             "shell",
-            "presentation":     { "clear": true, "panel": "shared", "reveal": "always" },
-        },
-        {
             "label":            "build & open local documentation (cargo-vsc)",
             "windows":          { "command": "start \"\"    \"${workspaceFolder}\\target\\doc\\cargo_vsc\\index.html\"" },
             "linux":            { "command": "xdg-open      \"${workspaceFolder}\\target\\doc\\cargo_vsc\\index.html\"" },
             "osx":              { "command": "open          \"${workspaceFolder}\\target\\doc\\cargo_vsc\\index.html\"" },
             "type":             "shell",
             "presentation":     { "clear": true, "panel": "shared", "reveal": "silent" },
-            "dependsOn":        [ "cargo doc --no-deps --package cargo-vsc --bin cargo-vsc" ],
+            "dependsOn":        [ "cargo doc --no-deps --package cargo-vsc" ],
+        },
+        {
+            "label":            "cargo doc --no-deps --package cargo-vsc",
+            "command":          "cargo +nightly doc --no-deps --package cargo-vsc || cargo doc --no-deps --package cargo-vsc",
+            "type":             "shell",
+            "presentation":     { "clear": true, "panel": "shared", "reveal": "always" },
         },
         {
             "label":            "open repository (cargo-vsc)",

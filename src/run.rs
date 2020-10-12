@@ -241,6 +241,10 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
         writeln!(o)?;
         writeln!(o)?;
         writeln!(o, "        // {}", package.name)?;
+
+        let local_doc_flags = format!("--no-deps --package {}", package.name);
+        let local_doc_build = format!("cargo doc {}", local_doc_flags);
+
         for target in package.targets.iter() {
             for kind in target.kind.iter() {
                 let cargo_build_debug = match kind.as_str() {
@@ -251,23 +255,16 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
                 let cargo_build_release = format!("{} --release", cargo_build_debug);
                 write_cmd(&mut o, &cargo_build_debug)?;
                 write_cmd(&mut o, &cargo_build_release)?;
-
-                let local_doc_flags = match kind.as_str() {
-                    "lib"       => format!("--no-deps --package {} --lib", package.name),
-                    "example"   => format!("--no-deps --package {} --bin {}", package.name, target.name),
-                    "bin"       => format!("--no-deps --package {} --bin {}", package.name, target.name),
-                    _other      => continue // docs not supported for this kind of target
-                };
-                let local_doc_build = format!("cargo doc {}", local_doc_flags);
-                let local_doc_open = if target.kind.len() <= 1 {
-                    format!("build & open local documentation ({})", target.name)
-                } else {
-                    format!("build & open local documentation ({}, {})", target.name, kind)
-                };
-                write_cargo_doc(&mut o, &local_doc_build, &local_doc_flags)?;
-                write_open_link(&mut o, &local_doc_open, &format!("${{workspaceFolder}}\\target\\doc\\{}\\index.html", package.name.replace('-', "_")), &local_doc_build)?;
             }
+
+            // XXX: dedupe tasks? if you have an rlib and a bin sharing the same target name, you'll only get docs for one, but open link tasks for both.
+            // OTOH VSC itself seems to deduplicate the tasks itself so maybe that's fine...
+            let local_doc_open = format!("build & open local documentation ({})", target.name);
+            write_open_link(&mut o, &local_doc_open, &format!("${{workspaceFolder}}\\target\\doc\\{}\\index.html", target.name.replace('-', "_")), &local_doc_build)?;
         }
+
+        write_cargo_doc(&mut o, &local_doc_build, &local_doc_flags)?;
+
         if let Some(repository) = package.manifest.toml.package.repository.as_ref() {
             write_open_link(&mut o, &format!("open repository ({})", package.name), &repository, "")?;
         }
