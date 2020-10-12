@@ -187,14 +187,14 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
     writeln!(o, "            \"label\":            \"cargo fetch\",")?;
     writeln!(o, "            \"command\":          \"cargo fetch\",")?;
     writeln!(o, "            \"type\":             \"shell\",")?;
-    writeln!(o, "            \"presentation\":     {{ \"group\": \"fetch\" }},")?;
+    writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"fetch\", \"reveal\": \"always\" }},")?;
     writeln!(o, "        }},")?;
     if has_any_local_install {
         writeln!(o, "        {{")?;
         writeln!(o, "            \"label\":            \"cargo local-install\",")?;
         writeln!(o, "            \"command\":          \"cargo install cargo-local-install && cargo local-install\",")?;
         writeln!(o, "            \"type\":             \"shell\",")?;
-        writeln!(o, "            \"presentation\":     {{ \"group\": \"fetch\" }},")?;
+        writeln!(o, "            \"presentation\":     {{ \"group\": \"fetch\", \"reveal\": \"always\" }},")?;
         writeln!(o, "        }},")?;
     }
     writeln!(o)?;
@@ -205,7 +205,7 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
     writeln!(o, "            \"label\":            \"check\",")?;
     writeln!(o, "            \"command\":          \"cargo check --frozen --all-targets\",")?;
     writeln!(o, "            \"type\":             \"shell\",")?;
-    writeln!(o, "            \"presentation\":     {{ \"group\": \"check\" }},")?;
+    writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"check\", \"reveal\": \"always\" }},")?;
     writeln!(o, "            \"problemMatcher\":   {{ \"base\": \"$rustc\", \"owner\": \"check\", \"source\": \"check\" }},")?;
     writeln!(o, "        }},")?;
     writeln!(o)?;
@@ -216,7 +216,7 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
     writeln!(o, "            \"label\":            \"test\",")?;
     writeln!(o, "            \"command\":          \"cargo test --frozen\",")?;
     writeln!(o, "            \"type\":             \"shell\",")?;
-    writeln!(o, "            \"presentation\":     {{ \"group\": \"test\" }},")?;
+    writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"test\", \"reveal\": \"always\" }},")?;
     writeln!(o, "            \"problemMatcher\":   {{ \"base\": \"$rustc\", \"owner\": \"test\", \"source\": \"test\" }},")?;
     writeln!(o, "        }},")?;
     writeln!(o)?;
@@ -227,7 +227,7 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
     writeln!(o, "            \"label\":            \"build\",")?;
     writeln!(o, "            \"command\":          \"cargo build --frozen --all-targets\",")?;
     writeln!(o, "            \"type\":             \"shell\",")?;
-    writeln!(o, "            \"presentation\":     {{ \"group\": \"build\" }},")?;
+    writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"build\", \"reveal\": \"always\" }},")?;
     writeln!(o, "            \"problemMatcher\":   {{ \"base\": \"$rustc\", \"owner\": \"build\", \"source\": \"build\" }},")?;
     writeln!(o, "        }},")?;
 

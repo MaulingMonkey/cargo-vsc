@@ -24,7 +24,7 @@
             "label":            "cargo fetch",
             "command":          "cargo fetch",
             "type":             "shell",
-            "presentation":     { "group": "fetch" },
+            "presentation":     { "clear": true, "group": "fetch", "reveal": "always" },
         },
 
 
@@ -34,7 +34,7 @@
             "label":            "check",
             "command":          "cargo check --frozen --all-targets",
             "type":             "shell",
-            "presentation":     { "group": "check" },
+            "presentation":     { "clear": true, "group": "check", "reveal": "always" },
             "problemMatcher":   { "base": "$rustc", "owner": "check", "source": "check" },
         },
 
@@ -45,7 +45,7 @@
             "label":            "test",
             "command":          "cargo test --frozen",
             "type":             "shell",
-            "presentation":     { "group": "test" },
+            "presentation":     { "clear": true, "group": "test", "reveal": "always" },
             "problemMatcher":   { "base": "$rustc", "owner": "test", "source": "test" },
         },
 
@@ -56,7 +56,7 @@
             "label":            "build",
             "command":          "cargo build --frozen --all-targets",
             "type":             "shell",
-            "presentation":     { "group": "build" },
+            "presentation":     { "clear": true, "group": "build", "reveal": "always" },
             "problemMatcher":   { "base": "$rustc", "owner": "build", "source": "build" },
         },
 
