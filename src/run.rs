@@ -253,9 +253,9 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
                 write_cmd(&mut o, &cargo_build_release)?;
 
                 let local_doc_flags = match kind.as_str() {
-                    "lib"       => format!("--package {} --lib", package.name),
-                    "example"   => format!("--package {} --bin {}", package.name, target.name),
-                    "bin"       => format!("--package {} --bin {}", package.name, target.name),
+                    "lib"       => format!("--no-deps --package {} --lib", package.name),
+                    "example"   => format!("--no-deps --package {} --bin {}", package.name, target.name),
+                    "bin"       => format!("--no-deps --package {} --bin {}", package.name, target.name),
                     _other      => continue // docs not supported for this kind of target
                 };
                 let local_doc_build = format!("cargo doc {}", local_doc_flags);

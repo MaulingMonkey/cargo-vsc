@@ -78,8 +78,8 @@
             "presentation":     { "clear": true, "panel": "shared", "reveal": "always" },
         },
         {
-            "label":            "cargo doc --package cargo-vsc --bin cargo-vsc",
-            "command":          "cargo +nightly doc --package cargo-vsc --bin cargo-vsc || cargo doc --package cargo-vsc --bin cargo-vsc",
+            "label":            "cargo doc --no-deps --package cargo-vsc --bin cargo-vsc",
+            "command":          "cargo +nightly doc --no-deps --package cargo-vsc --bin cargo-vsc || cargo doc --no-deps --package cargo-vsc --bin cargo-vsc",
             "type":             "shell",
             "presentation":     { "clear": true, "panel": "shared", "reveal": "always" },
         },
@@ -90,7 +90,7 @@
             "osx":              { "command": "open          \"${workspaceFolder}\\target\\doc\\cargo_vsc\\index.html\"" },
             "type":             "shell",
             "presentation":     { "clear": true, "panel": "shared", "reveal": "silent" },
-            "dependsOn":        [ "cargo doc --package cargo-vsc --bin cargo-vsc" ],
+            "dependsOn":        [ "cargo doc --no-deps --package cargo-vsc --bin cargo-vsc" ],
         },
         {
             "label":            "open repository (cargo-vsc)",
