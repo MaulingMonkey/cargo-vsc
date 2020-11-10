@@ -167,7 +167,7 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
     writeln!(o, "        {{")?;
     writeln!(o, "            \"label\":            \"default-build\",")?;
     writeln!(o, "            \"dependsOrder\":     \"sequence\",")?;
-    writeln!(o, "            \"dependsOn\":        [ \"fetch\", \"check\", \"test\", \"build\" ],")?;
+    writeln!(o, "            \"dependsOn\":        [ \"fetch\", \"check\", \"test\", \"build\", \"doc\" ],")?;
     writeln!(o, "            \"group\":            {{ \"kind\": \"build\", \"isDefault\": true }}")?;
     writeln!(o, "        }},")?;
     writeln!(o)?;
@@ -230,6 +230,17 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
     writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"build\", \"reveal\": \"always\" }},")?;
     writeln!(o, "            \"problemMatcher\":   {{ \"base\": \"$rustc\", \"owner\": \"build\", \"source\": \"build\" }},")?;
     writeln!(o, "        }},")?;
+    writeln!(o)?;
+    writeln!(o)?;
+    writeln!(o)?;
+    writeln!(o, "        // doc")?;
+    writeln!(o, "        {{")?;
+    writeln!(o, "            \"label\":            \"doc\",")?;
+    writeln!(o, "            \"command\":          \"cargo +nightly doc --frozen --no-deps || cargo doc --frozen --no-deps\",")?;
+    writeln!(o, "            \"type\":             \"shell\",")?;
+    writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"doc\", \"reveal\": \"always\" }},")?;
+    writeln!(o, "            \"problemMatcher\":   {{ \"base\": \"$rustc\", \"owner\": \"doc\", \"source\": \"doc\" }},")?;
+    writeln!(o, "        }},")?;
 
 
     for package in meta.packages.iter() {
@@ -241,9 +252,6 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
         writeln!(o)?;
         writeln!(o)?;
         writeln!(o, "        // {}", package.name)?;
-
-        let local_doc_flags = format!("--no-deps --package {}", package.name);
-        let local_doc_build = format!("cargo doc {}", local_doc_flags);
 
         for target in package.targets.iter() {
             for kind in target.kind.iter() {
@@ -260,10 +268,8 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
             // XXX: dedupe tasks? if you have an rlib and a bin sharing the same target name, you'll only get docs for one, but open link tasks for both.
             // OTOH VSC itself seems to deduplicate the tasks itself so maybe that's fine...
             let local_doc_open = format!("build & open local documentation ({})", target.name);
-            write_open_link(&mut o, &local_doc_open, &format!("${{workspaceFolder}}\\target\\doc\\{}\\index.html", target.name.replace('-', "_")), &local_doc_build)?;
+            write_open_link(&mut o, &local_doc_open, &format!("${{workspaceFolder}}\\target\\doc\\{}\\index.html", target.name.replace('-', "_")), "doc")?;
         }
-
-        write_cargo_doc(&mut o, &local_doc_build, &local_doc_flags)?;
 
         if let Some(repository) = package.manifest.toml.package.repository.as_ref() {
             write_open_link(&mut o, &format!("open repository ({})", package.name), &repository, "")?;
@@ -292,16 +298,6 @@ fn write_open_link(o: &mut impl io::Write, title: &str, url: &str, depends_on: &
     if !depends_on.is_empty() {
         writeln!(*o, "            \"dependsOn\":        [ {} ],", serde_json::to_string(depends_on).unwrap())?;
     }
-    writeln!(*o, "        }},")?;
-    Ok(())
-}
-
-fn write_cargo_doc(o: &mut impl io::Write, title: &str, flags: &str) -> io::Result<()> {
-    writeln!(*o, "        {{")?;
-    writeln!(*o, "            \"label\":            {},", serde_json::to_string(title).unwrap())?;
-    writeln!(*o, "            \"command\":          {},", serde_json::to_string(&format!("cargo +nightly doc {flags} || cargo doc {flags}", flags=flags)).unwrap())?;
-    writeln!(*o, "            \"type\":             \"shell\",")?;
-    writeln!(*o, "            \"presentation\":     {{ \"clear\": true, \"panel\": \"shared\", \"reveal\": \"always\" }},")?;
     writeln!(*o, "        }},")?;
     Ok(())
 }
