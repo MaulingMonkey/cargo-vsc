@@ -204,7 +204,7 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
     writeln!(o, "        // check")?;
     writeln!(o, "        {{")?;
     writeln!(o, "            \"label\":            \"check\",")?;
-    writeln!(o, "            \"command\":          \"cargo check --frozen --all-targets\",")?;
+    writeln!(o, "            \"command\":          \"cargo c --frozen --all-targets\",")?;
     writeln!(o, "            \"type\":             \"shell\",")?;
     writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"check\", \"reveal\": \"always\" }},")?;
     writeln!(o, "            \"problemMatcher\":   {{ \"base\": \"$rustc\", \"owner\": \"check\", \"source\": \"check\" }},")?;
@@ -215,7 +215,7 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
     writeln!(o, "        // test")?;
     writeln!(o, "        {{")?;
     writeln!(o, "            \"label\":            \"test\",")?;
-    writeln!(o, "            \"command\":          \"cargo test --frozen\",")?;
+    writeln!(o, "            \"command\":          \"cargo t --frozen\",")?;
     writeln!(o, "            \"type\":             \"shell\",")?;
     writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"test\", \"reveal\": \"always\" }},")?;
     writeln!(o, "            \"problemMatcher\":   {{ \"base\": \"$rustc\", \"owner\": \"test\", \"source\": \"test\" }},")?;
@@ -226,7 +226,7 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
     writeln!(o, "        // build")?;
     writeln!(o, "        {{")?;
     writeln!(o, "            \"label\":            \"build\",")?;
-    writeln!(o, "            \"command\":          \"cargo build --frozen --all-targets\",")?;
+    writeln!(o, "            \"command\":          \"cargo b --frozen --all-targets\",")?;
     writeln!(o, "            \"type\":             \"shell\",")?;
     writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"build\", \"reveal\": \"always\" }},")?;
     writeln!(o, "            \"problemMatcher\":   {{ \"base\": \"$rustc\", \"owner\": \"build\", \"source\": \"build\" }},")?;
