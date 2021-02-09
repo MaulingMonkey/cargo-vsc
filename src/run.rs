@@ -242,6 +242,17 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
     writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"doc\", \"reveal\": \"always\" }},")?;
     writeln!(o, "            \"problemMatcher\":   {{ \"base\": \"$rustc\", \"owner\": \"doc\", \"source\": \"doc\" }},")?;
     writeln!(o, "        }},")?;
+    writeln!(o)?;
+    writeln!(o)?;
+    writeln!(o)?;
+    writeln!(o, "        // help")?;
+    writeln!(o, "        {{")?;
+    writeln!(o, "            \"label\":            \"help\",")?;
+    writeln!(o, "            \"command\":          \"cargo +nightly doc --frozen --no-deps --open || cargo doc --frozen --no-deps --open\",")?;
+    writeln!(o, "            \"type\":             \"shell\",")?;
+    writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"doc\", \"reveal\": \"always\" }},")?;
+    writeln!(o, "            \"problemMatcher\":   {{ \"base\": \"$rustc\", \"owner\": \"doc\", \"source\": \"doc\" }},")?;
+    writeln!(o, "        }},")?;
 
 
     for package in meta.packages.iter() {
