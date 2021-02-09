@@ -10,7 +10,8 @@ use std::process::exit;
 pub fn run() {
     let meta = metadata::Root::get().unwrap_or_else(|err| { eprintln!("error parsing `cargo metadata`: {}", err); exit(1) });
     let vscode = create_vscode_dir(&meta).unwrap_or_else(|err| { eprintln!("error creating .vscode directory: {}", err); exit(1) });
-    let context = Context { meta, vscode, _non_exhaustive: () };
+    let mut context = Context { meta, vscode, _non_exhaustive: () };
+    context.meta.workspace_members.retain(|p| !p.starts_with("xtask "));
 
     let mut errors = false;
     create_vscode_extensions_json   (&context).unwrap_or_else(|err| { eprintln!("error creating .vscode/extensions.json: {}", err); errors = true; });
