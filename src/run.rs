@@ -61,7 +61,7 @@ fn create_vscode_extensions_json(Context { meta, vscode, .. }: &Context) -> io::
     let mut o = create_json(&path)?;
     writeln!(o, "{{")?;
     writeln!(o, "    \"recommendations\": [")?;
-    write_ext(&mut o, "matklad.rust-analyzer")?;
+    write_ext(&mut o, "rust-lang.rust-analyzer")?;
     if meta.packages.iter().any(|p| p.targets.iter().any(|t| t.kind.iter().any(|kind| ["example", "bin"].contains(&&**kind)))) {
         write_ext(&mut o, "ms-vscode.cpptools")?;
     }
