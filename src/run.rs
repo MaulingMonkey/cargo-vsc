@@ -163,93 +163,119 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
     let has_any_local_install = meta.workspace.toml.as_ref().map_or(false, |ws| ws.metadata.local_install.is_some());
     // TODO: also install for packages: meta.packages.iter().any(|p| meta.workspace_members.contains(&p.id) && p.manifest.toml.metadata.local_install.is_some());
 
+    let simple = meta.workspace.toml.as_ref().and_then(|ws| ws.metadata.cargo_vsc.simple).unwrap_or(true);
+
     writeln!(o, "{{")?;
     writeln!(o, "    \"version\":          \"2.0.0\",")?;
     writeln!(o, "    \"problemMatcher\":   \"$rustc\",")?; // rust-analyzer
     writeln!(o, "    \"type\":             \"shell\",")?;
     writeln!(o, "    \"tasks\": [")?;
-    writeln!(o, "        // entry points")?;
-    writeln!(o, "        {{")?;
-    writeln!(o, "            \"label\":            \"default-build\",")?;
-    writeln!(o, "            \"dependsOrder\":     \"sequence\",")?;
-    writeln!(o, "            \"dependsOn\":        [ \"fetch\", \"check\", \"test\", \"build\", \"doc\" ],")?;
-    writeln!(o, "            \"group\":            {{ \"kind\": \"build\", \"isDefault\": true }}")?;
-    writeln!(o, "        }},")?;
-    writeln!(o)?;
-    writeln!(o)?;
-    writeln!(o)?;
-    writeln!(o, "        // fetch")?;
-    writeln!(o, "        {{")?;
-    writeln!(o, "            \"label\":            \"fetch\",")?;
-    writeln!(o, "            \"dependsOn\":        [")?;
-    writeln!(o, "                \"cargo fetch\",")?;
-    if has_any_local_install {
-        writeln!(o, "                \"cargo local-install\",")?;
-    }
-    writeln!(o, "            ]")?;
-    writeln!(o, "        }},")?;
-    writeln!(o, "        {{")?;
-    writeln!(o, "            \"label\":            \"cargo fetch\",")?;
-    writeln!(o, "            \"command\":          \"cargo fetch\",")?;
-    writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"fetch\", \"reveal\": \"always\" }},")?;
-    writeln!(o, "        }},")?;
-    if has_any_local_install {
+    if simple {
         writeln!(o, "        {{")?;
-        writeln!(o, "            \"label\":            \"cargo local-install\",")?;
-        writeln!(o, "            \"command\":          \"cargo install cargo-local-install && cargo local-install\",")?;
-        writeln!(o, "            \"presentation\":     {{ \"group\": \"fetch\", \"reveal\": \"always\" }},")?;
+        writeln!(o, "            \"label\":            \"build\",")?;
+        writeln!(o, "            \"command\":          \"cargo test --all-targets\",")?;
+        if has_any_local_install {
+            writeln!(o, "            \"dependsOn\":        [\"cargo local-install\"],")?;
+        }
+        writeln!(o, "            \"group\":            {{ \"kind\": \"build\", \"isDefault\": true }},")?;
+        writeln!(o, "        }},")?;
+        writeln!(o, "        {{")?;
+        writeln!(o, "            \"label\":            \"help\",")?;
+        writeln!(o, "            \"command\":          \"cargo doc --no-deps --open\",")?;
+        if has_any_local_install {
+            writeln!(o, "            \"dependsOn\":        [\"cargo local-install\"],")?;
+        }
+        writeln!(o, "        }},")?;
+        if has_any_local_install {
+            writeln!(o, "        {{")?;
+            writeln!(o, "            \"label\":            \"cargo local-install\",")?;
+            writeln!(o, "            \"command\":          \"cargo local-install\",")?;
+            writeln!(o, "        }},")?;
+        }
+    } else {
+        writeln!(o, "        // entry points")?;
+        writeln!(o, "        {{")?;
+        writeln!(o, "            \"label\":            \"default-build\",")?;
+        writeln!(o, "            \"dependsOrder\":     \"sequence\",")?;
+        writeln!(o, "            \"dependsOn\":        [ \"fetch\", \"check\", \"test\", \"build\", \"doc\" ],")?;
+        writeln!(o, "            \"group\":            {{ \"kind\": \"build\", \"isDefault\": true }}")?;
+        writeln!(o, "        }},")?;
+        writeln!(o)?;
+        writeln!(o)?;
+        writeln!(o)?;
+        writeln!(o, "        // fetch")?;
+        writeln!(o, "        {{")?;
+        writeln!(o, "            \"label\":            \"fetch\",")?;
+        writeln!(o, "            \"dependsOn\":        [")?;
+        writeln!(o, "                \"cargo fetch\",")?;
+        if has_any_local_install {
+            writeln!(o, "                \"cargo local-install\",")?;
+        }
+        writeln!(o, "            ]")?;
+        writeln!(o, "        }},")?;
+        writeln!(o, "        {{")?;
+        writeln!(o, "            \"label\":            \"cargo fetch\",")?;
+        writeln!(o, "            \"command\":          \"cargo fetch\",")?;
+        writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"fetch\", \"reveal\": \"always\" }},")?;
+        writeln!(o, "        }},")?;
+        if has_any_local_install {
+            writeln!(o, "        {{")?;
+            writeln!(o, "            \"label\":            \"cargo local-install\",")?;
+            writeln!(o, "            \"command\":          \"cargo install cargo-local-install && cargo local-install\",")?;
+            writeln!(o, "            \"presentation\":     {{ \"group\": \"fetch\", \"reveal\": \"always\" }},")?;
+            writeln!(o, "        }},")?;
+        }
+        writeln!(o)?;
+        writeln!(o)?;
+        writeln!(o)?;
+        writeln!(o, "        // check")?;
+        writeln!(o, "        {{")?;
+        writeln!(o, "            \"label\":            \"check\",")?;
+        writeln!(o, "            \"command\":          \"cargo c --frozen --all-targets\",")?;
+        writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"check\", \"reveal\": \"always\" }},")?;
+        writeln!(o, "            \"problemMatcher\":   {{ \"base\": \"$rustc\", \"owner\": \"check\", \"source\": \"check\" }},")?;
+        writeln!(o, "        }},")?;
+        writeln!(o)?;
+        writeln!(o)?;
+        writeln!(o)?;
+        writeln!(o, "        // test")?;
+        writeln!(o, "        {{")?;
+        writeln!(o, "            \"label\":            \"test\",")?;
+        writeln!(o, "            \"command\":          \"cargo t --frozen\",")?;
+        writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"test\", \"reveal\": \"always\" }},")?;
+        writeln!(o, "            \"problemMatcher\":   {{ \"base\": \"$rustc\", \"owner\": \"test\", \"source\": \"test\" }},")?;
+        writeln!(o, "        }},")?;
+        writeln!(o)?;
+        writeln!(o)?;
+        writeln!(o)?;
+        writeln!(o, "        // build")?;
+        writeln!(o, "        {{")?;
+        writeln!(o, "            \"label\":            \"build\",")?;
+        writeln!(o, "            \"command\":          \"cargo b --frozen --all-targets\",")?;
+        writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"build\", \"reveal\": \"always\" }},")?;
+        writeln!(o, "            \"problemMatcher\":   {{ \"base\": \"$rustc\", \"owner\": \"build\", \"source\": \"build\" }},")?;
+        writeln!(o, "        }},")?;
+        writeln!(o)?;
+        writeln!(o)?;
+        writeln!(o)?;
+        writeln!(o, "        // doc")?;
+        writeln!(o, "        {{")?;
+        writeln!(o, "            \"label\":            \"doc\",")?;
+        writeln!(o, "            \"command\":          \"cargo doc --frozen --no-deps\",")?;
+        writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"doc\", \"reveal\": \"always\" }},")?;
+        writeln!(o, "            \"problemMatcher\":   {{ \"base\": \"$rustc\", \"owner\": \"doc\", \"source\": \"doc\" }},")?;
+        writeln!(o, "        }},")?;
+        writeln!(o)?;
+        writeln!(o)?;
+        writeln!(o)?;
+        writeln!(o, "        // help")?;
+        writeln!(o, "        {{")?;
+        writeln!(o, "            \"label\":            \"help\",")?;
+        writeln!(o, "            \"command\":          \"cargo doc --frozen --no-deps --open\",")?;
+        writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"doc\", \"reveal\": \"always\" }},")?;
+        writeln!(o, "            \"problemMatcher\":   {{ \"base\": \"$rustc\", \"owner\": \"doc\", \"source\": \"doc\" }},")?;
         writeln!(o, "        }},")?;
     }
-    writeln!(o)?;
-    writeln!(o)?;
-    writeln!(o)?;
-    writeln!(o, "        // check")?;
-    writeln!(o, "        {{")?;
-    writeln!(o, "            \"label\":            \"check\",")?;
-    writeln!(o, "            \"command\":          \"cargo c --frozen --all-targets\",")?;
-    writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"check\", \"reveal\": \"always\" }},")?;
-    writeln!(o, "            \"problemMatcher\":   {{ \"base\": \"$rustc\", \"owner\": \"check\", \"source\": \"check\" }},")?;
-    writeln!(o, "        }},")?;
-    writeln!(o)?;
-    writeln!(o)?;
-    writeln!(o)?;
-    writeln!(o, "        // test")?;
-    writeln!(o, "        {{")?;
-    writeln!(o, "            \"label\":            \"test\",")?;
-    writeln!(o, "            \"command\":          \"cargo t --frozen\",")?;
-    writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"test\", \"reveal\": \"always\" }},")?;
-    writeln!(o, "            \"problemMatcher\":   {{ \"base\": \"$rustc\", \"owner\": \"test\", \"source\": \"test\" }},")?;
-    writeln!(o, "        }},")?;
-    writeln!(o)?;
-    writeln!(o)?;
-    writeln!(o)?;
-    writeln!(o, "        // build")?;
-    writeln!(o, "        {{")?;
-    writeln!(o, "            \"label\":            \"build\",")?;
-    writeln!(o, "            \"command\":          \"cargo b --frozen --all-targets\",")?;
-    writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"build\", \"reveal\": \"always\" }},")?;
-    writeln!(o, "            \"problemMatcher\":   {{ \"base\": \"$rustc\", \"owner\": \"build\", \"source\": \"build\" }},")?;
-    writeln!(o, "        }},")?;
-    writeln!(o)?;
-    writeln!(o)?;
-    writeln!(o)?;
-    writeln!(o, "        // doc")?;
-    writeln!(o, "        {{")?;
-    writeln!(o, "            \"label\":            \"doc\",")?;
-    writeln!(o, "            \"command\":          \"cargo doc --frozen --no-deps\",")?;
-    writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"doc\", \"reveal\": \"always\" }},")?;
-    writeln!(o, "            \"problemMatcher\":   {{ \"base\": \"$rustc\", \"owner\": \"doc\", \"source\": \"doc\" }},")?;
-    writeln!(o, "        }},")?;
-    writeln!(o)?;
-    writeln!(o)?;
-    writeln!(o)?;
-    writeln!(o, "        // help")?;
-    writeln!(o, "        {{")?;
-    writeln!(o, "            \"label\":            \"help\",")?;
-    writeln!(o, "            \"command\":          \"cargo doc --frozen --no-deps --open\",")?;
-    writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"doc\", \"reveal\": \"always\" }},")?;
-    writeln!(o, "            \"problemMatcher\":   {{ \"base\": \"$rustc\", \"owner\": \"doc\", \"source\": \"doc\" }},")?;
-    writeln!(o, "        }},")?;
 
 
     for package in meta.packages.iter() {
@@ -274,10 +300,12 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
                 write_cmd(&mut o, &cargo_build_release)?;
             }
 
-            // XXX: dedupe tasks? if you have an rlib and a bin sharing the same target name, you'll only get docs for one, but open link tasks for both.
-            // OTOH VSC itself seems to deduplicate the tasks itself so maybe that's fine...
-            let local_doc_open = format!("build & open local documentation ({})", target.name);
-            write_open_link(&mut o, &local_doc_open, &format!("${{workspaceFolder}}\\target\\doc\\{}\\index.html", target.name.replace('-', "_")), "doc")?;
+            if !simple {
+                // XXX: dedupe tasks? if you have an rlib and a bin sharing the same target name, you'll only get docs for one, but open link tasks for both.
+                // OTOH VSC itself seems to deduplicate the tasks itself so maybe that's fine...
+                let local_doc_open = format!("build & open local documentation ({})", target.name);
+                write_open_link(&mut o, &local_doc_open, &format!("${{workspaceFolder}}\\target\\doc\\{}\\index.html", target.name.replace('-', "_")), "doc")?;
+            }
         }
 
         if let Some(repository) = package.manifest.toml.package.repository.as_ref() {
@@ -315,7 +343,6 @@ fn write_cmd(o: &mut impl io::Write, cmd: &str) -> io::Result<()> {
     writeln!(*o, "        {{")?;
     writeln!(*o, "            \"label\":            {},", cmd)?;
     writeln!(*o, "            \"command\":          {},", cmd)?;
-    writeln!(*o, "            \"problemMatcher\":   \"$rustc\",")?;
     writeln!(*o, "            \"presentation\":     {{ \"clear\": true, \"panel\": \"shared\", \"reveal\": \"always\" }},")?;
     writeln!(*o, "        }},")?;
     Ok(())

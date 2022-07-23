@@ -108,6 +108,20 @@ pub(crate) struct Package {
 #[derive(Deserialize, Debug, Default)]
 pub(crate) struct Metadata {
     pub local_install: Option<de::IgnoredAny>,
+    #[serde(rename="cargo-vsc")] #[serde(default)] pub cargo_vsc: MetadataCargoVsc,
+}
+
+/// Cargo.toml<br>
+///
+/// ```toml
+/// [package.metadata.cargo-vsc] # or:
+///
+/// [workspace.metadata.cargo-vsc]
+/// simple = true
+/// ```
+#[derive(Deserialize, Debug, Default)]
+pub(crate) struct MetadataCargoVsc {
+    pub simple: Option<bool>,
 }
 
 
