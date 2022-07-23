@@ -103,11 +103,10 @@ fn create_vscode_launch_json(Context { meta, vscode, .. }: &Context) -> io::Resu
     writeln!(o, "    \"version\": \"0.2.0\",")?;
     writeln!(o, "    \"configurations\": [")?;
 
-    for package in meta.packages.iter() {
-        if !meta.workspace_members.contains(&package.id) {
-            continue
-        }
+    let member_packages = meta.packages.iter().filter(|package| meta.workspace_members.contains(&package.id));
+    let single_member_package = member_packages.clone().count() <= 1;
 
+    for package in member_packages {
         writeln!(o, "        // {}", package.name)?;
         for target in package.targets.iter() {
             for kind in target.kind.iter() {
@@ -119,10 +118,22 @@ fn create_vscode_launch_json(Context { meta, vscode, .. }: &Context) -> io::Resu
                 let cargo_build_release = format!("{} --release", cargo_build_debug);
 
                 for (config, build) in vec![("debug", cargo_build_debug), ("release", cargo_build_release)].into_iter() {
-                    let name = if package.name == target.name && kind == "bin" {
-                        format!("{} • {}", package.name, config)
-                    } else {
-                        format!("{} • {} • {} • {}", package.name, kind, target.name, config)
+                    let name = {
+                        let mut name = String::new();
+                        if !single_member_package {
+                            name.push_str(&package.name);
+                            name.push_str(" • ");
+                        }
+                        if kind != "bin" {
+                            name.push_str(&kind);
+                            name.push_str(" • ");
+                        }
+                        if package.name != target.name {
+                            name.push_str(&target.name);
+                            name.push_str(" • ");
+                        }
+                        name.push_str(&config);
+                        name
                     };
 
                     writeln!(o, "        {{")?;
