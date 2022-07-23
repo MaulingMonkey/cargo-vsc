@@ -165,8 +165,9 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
     // TODO: also install for packages: meta.packages.iter().any(|p| meta.workspace_members.contains(&p.id) && p.manifest.toml.metadata.local_install.is_some());
 
     writeln!(o, "{{")?;
-    writeln!(o, "    \"version\": \"2.0.0\",")?;
-    writeln!(o, "    \"problemMatcher\": \"$rustc\",")?; // rust-analyzer
+    writeln!(o, "    \"version\":          \"2.0.0\",")?;
+    writeln!(o, "    \"problemMatcher\":   \"$rustc\",")?; // rust-analyzer
+    writeln!(o, "    \"type\":             \"shell\",")?;
     writeln!(o, "    \"tasks\": [")?;
     writeln!(o, "        // entry points")?;
     writeln!(o, "        {{")?;
@@ -191,14 +192,12 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
     writeln!(o, "        {{")?;
     writeln!(o, "            \"label\":            \"cargo fetch\",")?;
     writeln!(o, "            \"command\":          \"cargo fetch\",")?;
-    writeln!(o, "            \"type\":             \"shell\",")?;
     writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"fetch\", \"reveal\": \"always\" }},")?;
     writeln!(o, "        }},")?;
     if has_any_local_install {
         writeln!(o, "        {{")?;
         writeln!(o, "            \"label\":            \"cargo local-install\",")?;
         writeln!(o, "            \"command\":          \"cargo install cargo-local-install && cargo local-install\",")?;
-        writeln!(o, "            \"type\":             \"shell\",")?;
         writeln!(o, "            \"presentation\":     {{ \"group\": \"fetch\", \"reveal\": \"always\" }},")?;
         writeln!(o, "        }},")?;
     }
@@ -209,7 +208,6 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
     writeln!(o, "        {{")?;
     writeln!(o, "            \"label\":            \"check\",")?;
     writeln!(o, "            \"command\":          \"cargo c --frozen --all-targets\",")?;
-    writeln!(o, "            \"type\":             \"shell\",")?;
     writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"check\", \"reveal\": \"always\" }},")?;
     writeln!(o, "            \"problemMatcher\":   {{ \"base\": \"$rustc\", \"owner\": \"check\", \"source\": \"check\" }},")?;
     writeln!(o, "        }},")?;
@@ -220,7 +218,6 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
     writeln!(o, "        {{")?;
     writeln!(o, "            \"label\":            \"test\",")?;
     writeln!(o, "            \"command\":          \"cargo t --frozen\",")?;
-    writeln!(o, "            \"type\":             \"shell\",")?;
     writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"test\", \"reveal\": \"always\" }},")?;
     writeln!(o, "            \"problemMatcher\":   {{ \"base\": \"$rustc\", \"owner\": \"test\", \"source\": \"test\" }},")?;
     writeln!(o, "        }},")?;
@@ -231,7 +228,6 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
     writeln!(o, "        {{")?;
     writeln!(o, "            \"label\":            \"build\",")?;
     writeln!(o, "            \"command\":          \"cargo b --frozen --all-targets\",")?;
-    writeln!(o, "            \"type\":             \"shell\",")?;
     writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"build\", \"reveal\": \"always\" }},")?;
     writeln!(o, "            \"problemMatcher\":   {{ \"base\": \"$rustc\", \"owner\": \"build\", \"source\": \"build\" }},")?;
     writeln!(o, "        }},")?;
@@ -242,7 +238,6 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
     writeln!(o, "        {{")?;
     writeln!(o, "            \"label\":            \"doc\",")?;
     writeln!(o, "            \"command\":          \"cargo +nightly doc --frozen --no-deps || cargo doc --frozen --no-deps\",")?;
-    writeln!(o, "            \"type\":             \"shell\",")?;
     writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"doc\", \"reveal\": \"always\" }},")?;
     writeln!(o, "            \"problemMatcher\":   {{ \"base\": \"$rustc\", \"owner\": \"doc\", \"source\": \"doc\" }},")?;
     writeln!(o, "        }},")?;
@@ -253,7 +248,6 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
     writeln!(o, "        {{")?;
     writeln!(o, "            \"label\":            \"help\",")?;
     writeln!(o, "            \"command\":          \"cargo +nightly doc --frozen --no-deps --open || cargo doc --frozen --no-deps --open\",")?;
-    writeln!(o, "            \"type\":             \"shell\",")?;
     writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"doc\", \"reveal\": \"always\" }},")?;
     writeln!(o, "            \"problemMatcher\":   {{ \"base\": \"$rustc\", \"owner\": \"doc\", \"source\": \"doc\" }},")?;
     writeln!(o, "        }},")?;
@@ -309,7 +303,6 @@ fn write_open_link(o: &mut impl io::Write, title: &str, url: &str, depends_on: &
     writeln!(*o, "            \"windows\":          {{ \"command\": {} }},", serde_json::to_string(&format!("start \"\"    \"{}\"", url)).unwrap())?;
     writeln!(*o, "            \"linux\":            {{ \"command\": {} }},", serde_json::to_string(&format!("xdg-open      \"{}\"", url)).unwrap())?;
     writeln!(*o, "            \"osx\":              {{ \"command\": {} }},", serde_json::to_string(&format!("open          \"{}\"", url)).unwrap())?;
-    writeln!(*o, "            \"type\":             \"shell\",")?;
     writeln!(*o, "            \"presentation\":     {{ \"clear\": true, \"panel\": \"shared\", \"reveal\": \"silent\" }},")?;
     if !depends_on.is_empty() {
         writeln!(*o, "            \"dependsOn\":        [ {} ],", serde_json::to_string(depends_on).unwrap())?;
@@ -323,7 +316,6 @@ fn write_cmd(o: &mut impl io::Write, cmd: &str) -> io::Result<()> {
     writeln!(*o, "        {{")?;
     writeln!(*o, "            \"label\":            {},", cmd)?;
     writeln!(*o, "            \"command\":          {},", cmd)?;
-    writeln!(*o, "            \"type\":             \"shell\",")?;
     writeln!(*o, "            \"problemMatcher\":   \"$rustc\",")?;
     writeln!(*o, "            \"presentation\":     {{ \"clear\": true, \"panel\": \"shared\", \"reveal\": \"always\" }},")?;
     writeln!(*o, "        }},")?;
