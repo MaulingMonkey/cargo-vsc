@@ -79,8 +79,7 @@ fn write_ext(o: &mut impl io::Write, extension: &str) -> io::Result<()> {
 
 fn create_vscode_settings_json(Context { vscode, .. }: &Context) -> io::Result<()> {
     let files_exclude = [
-        "/**/.git",         // probably implicit, but be explicit anyways
-        "/target/*/*/*",    // clutters up search results
+        "target/*/*/*",     // clutters up search results
     ];
 
     let path = vscode.join("settings.json");
