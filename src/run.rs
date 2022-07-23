@@ -136,10 +136,14 @@ fn create_vscode_launch_json(Context { meta, vscode, .. }: &Context) -> io::Resu
                     writeln!(o, "            \"cwd\":                      \"${{workspaceFolder}}\",")?;
                     writeln!(o, "            \"environment\":              [ {{ \"name\": \"RUST_BACKTRACE\", \"value\": \"1\" }} ],")?;
                     writeln!(o, "            \"windows\": {{")?;
-                    writeln!(o, "                \"type\":                     \"cppvsdbg\",")?; // despite vscode intellisense errors to the contrary, this totally works & is necessary
-                    writeln!(o, "                \"program\":                  {},", serde_json::to_string(&format!("${{workspaceFolder}}/target/{}/{}{}.exe", config, subdir, target.name)).unwrap())?;
-                    writeln!(o, "                \"enableDebugHeap\":          {},", config == "debug")?;
-                    writeln!(o, "            }}")?;
+                    writeln!(o, "                \"type\":                 \"cppvsdbg\",")?; // despite vscode intellisense errors to the contrary, this totally works & is necessary
+                    writeln!(o, "                \"program\":              {},", serde_json::to_string(&format!("${{workspaceFolder}}/target/{}/{}{}.exe", config, subdir, target.name)).unwrap())?;
+                    writeln!(o, "                \"enableDebugHeap\":      {},", config == "debug")?;
+                    writeln!(o, "            }},")?;
+                    writeln!(o, "            \"symbolOptions\": {{")?; // despite vscode intellisense errors to the contrary, this totally works
+                    writeln!(o, "                // \"cachePath\":         \"${{env:TEMP}}/SymbolCache\"")?; // this is the platform default
+                    writeln!(o, "                \"searchMicrosoftSymbolServer\": true,")?;
+                    writeln!(o, "            }},")?;
                     writeln!(o, "        }},")?;
                 }
             }
