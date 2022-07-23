@@ -4,7 +4,7 @@
     "configurations": [
         // cargo-vsc
         {
-            "name":                     "cargo-vsc • debug",
+            "name":                     "debug",
             "type":                     "cppdbg",
             "request":                  "launch",
             "internalConsoleOptions":   "openOnSessionStart",
@@ -13,13 +13,17 @@
             "cwd":                      "${workspaceFolder}",
             "environment":              [ { "name": "RUST_BACKTRACE", "value": "1" } ],
             "windows": {
-                "type":                     "cppvsdbg",
-                "program":                  "${workspaceFolder}/target/debug/cargo-vsc.exe",
-                "enableDebugHeap":          true,
-            }
+                "type":                 "cppvsdbg",
+                "program":              "${workspaceFolder}/target/debug/cargo-vsc.exe",
+                "enableDebugHeap":      true,
+            },
+            "symbolOptions": {
+                // "cachePath":         "${env:TEMP}/SymbolCache"
+                "searchMicrosoftSymbolServer": true,
+            },
         },
         {
-            "name":                     "cargo-vsc • release",
+            "name":                     "release",
             "type":                     "cppdbg",
             "request":                  "launch",
             "internalConsoleOptions":   "openOnSessionStart",
@@ -28,10 +32,14 @@
             "cwd":                      "${workspaceFolder}",
             "environment":              [ { "name": "RUST_BACKTRACE", "value": "1" } ],
             "windows": {
-                "type":                     "cppvsdbg",
-                "program":                  "${workspaceFolder}/target/release/cargo-vsc.exe",
-                "enableDebugHeap":          false,
-            }
+                "type":                 "cppvsdbg",
+                "program":              "${workspaceFolder}/target/release/cargo-vsc.exe",
+                "enableDebugHeap":      false,
+            },
+            "symbolOptions": {
+                // "cachePath":         "${env:TEMP}/SymbolCache"
+                "searchMicrosoftSymbolServer": true,
+            },
         },
     ]
 }
