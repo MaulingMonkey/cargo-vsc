@@ -236,7 +236,7 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
     writeln!(o, "        // doc")?;
     writeln!(o, "        {{")?;
     writeln!(o, "            \"label\":            \"doc\",")?;
-    writeln!(o, "            \"command\":          \"cargo +nightly doc --frozen --no-deps || cargo doc --frozen --no-deps\",")?;
+    writeln!(o, "            \"command\":          \"cargo doc --frozen --no-deps\",")?;
     writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"doc\", \"reveal\": \"always\" }},")?;
     writeln!(o, "            \"problemMatcher\":   {{ \"base\": \"$rustc\", \"owner\": \"doc\", \"source\": \"doc\" }},")?;
     writeln!(o, "        }},")?;
@@ -246,7 +246,7 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
     writeln!(o, "        // help")?;
     writeln!(o, "        {{")?;
     writeln!(o, "            \"label\":            \"help\",")?;
-    writeln!(o, "            \"command\":          \"cargo +nightly doc --frozen --no-deps --open || cargo doc --frozen --no-deps --open\",")?;
+    writeln!(o, "            \"command\":          \"cargo doc --frozen --no-deps --open\",")?;
     writeln!(o, "            \"presentation\":     {{ \"clear\": true, \"group\": \"doc\", \"reveal\": \"always\" }},")?;
     writeln!(o, "            \"problemMatcher\":   {{ \"base\": \"$rustc\", \"owner\": \"doc\", \"source\": \"doc\" }},")?;
     writeln!(o, "        }},")?;
