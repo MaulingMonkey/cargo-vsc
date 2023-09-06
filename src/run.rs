@@ -180,6 +180,9 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
     writeln!(o, "    \"version\":          \"2.0.0\",")?;
     writeln!(o, "    \"problemMatcher\":   \"$rustc\",")?; // rust-analyzer
     writeln!(o, "    \"type\":             \"shell\",")?;
+    writeln!(o, "    \"presentation\": {{")?;
+    writeln!(o, "        \"clear\":        true,")?;
+    writeln!(o, "    }},")?;
     writeln!(o, "    \"tasks\": [")?;
     if simple {
         writeln!(o, "        {{")?;

@@ -3,6 +3,9 @@
     "version":          "2.0.0",
     "problemMatcher":   "$rustc",
     "type":             "shell",
+    "presentation": {
+        "clear":        true,
+    },
     "tasks": [
         {
             "label":            "build",
