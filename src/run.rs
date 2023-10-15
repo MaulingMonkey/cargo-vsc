@@ -22,7 +22,7 @@ pub fn run() {
 }
 
 fn create_vscode_dir(meta: &metadata::Root) -> io::Result<PathBuf> {
-    let vscode = meta.workspace.dir.join(".vscode");
+    let vscode = meta.workspace_root.join(".vscode");
     match std::fs::create_dir(&vscode) {
         Ok(()) => {
             std::fs::write(vscode.join(".gitignore"), "*").map_err(|err| io::Error::new(err.kind(), format!("unable to create .gitignore: {}", err)))?; // XXX: remap err for more context?
@@ -171,10 +171,10 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
     let path = vscode.join("tasks.json");
     let mut o = create_json(&path)?;
 
-    let has_any_local_install = meta.workspace.toml.as_ref().map_or(false, |ws| ws.metadata.local_install.is_some());
+    let has_any_local_install = meta.metadata.as_ref().and_then(|m| m.local_install).is_some();
     // TODO: also install for packages: meta.packages.iter().any(|p| meta.workspace_members.contains(&p.id) && p.manifest.toml.metadata.local_install.is_some());
 
-    let simple = meta.workspace.toml.as_ref().and_then(|ws| ws.metadata.cargo_vsc.simple).unwrap_or(true);
+    let simple = meta.metadata.as_ref().and_then(|m| m.cargo_vsc.simple).unwrap_or(true);
 
     writeln!(o, "{{")?;
     writeln!(o, "    \"version\":          \"2.0.0\",")?;
@@ -322,13 +322,13 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
             }
         }
 
-        if let Some(repository) = package.manifest.toml.package.repository.as_ref() {
+        if let Some(repository) = package.repository.as_ref() {
             write_open_link(&mut o, &format!("open repository ({})", package.name), &repository, "")?;
         }
-        if let Some(documentation) = package.manifest.toml.package.documentation.as_ref() {
+        if let Some(documentation) = package.documentation.as_ref() {
             write_open_link(&mut o, &format!("open documentation ({})", package.name), &documentation, "")?;
         }
-        if let Some(homepage) = package.manifest.toml.package.homepage.as_ref() {
+        if let Some(homepage) = package.homepage.as_ref() {
             write_open_link(&mut o, &format!("open homepage ({})", package.name), &homepage, "")?;
         }
     }
