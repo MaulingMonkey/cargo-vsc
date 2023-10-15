@@ -322,14 +322,14 @@ fn create_vscode_tasks_json(Context { meta, vscode, .. }: &Context) -> io::Resul
             }
         }
 
-        if let Some(repository) = package.repository.as_ref() {
-            write_open_link(&mut o, &format!("open repository ({})", package.name), &repository, "")?;
-        }
-        if let Some(documentation) = package.documentation.as_ref() {
-            write_open_link(&mut o, &format!("open documentation ({})", package.name), &documentation, "")?;
-        }
-        if let Some(homepage) = package.homepage.as_ref() {
-            write_open_link(&mut o, &format!("open homepage ({})", package.name), &homepage, "")?;
+        for (label, link) in [
+            ("repository",      package.repository      .as_deref()),
+            ("documentation",   package.documentation   .as_deref()),
+            ("homepage",        package.homepage        .as_deref()),
+        ] {
+            if let Some(link) = link {
+                write_open_link(&mut o, &format!("open {label} ({})", package.name), link, "")?;
+            }
         }
     }
 
